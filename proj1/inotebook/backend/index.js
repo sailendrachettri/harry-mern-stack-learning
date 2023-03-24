@@ -6,8 +6,17 @@ connectToMongo()
 const app = express()
 const port = 5000
 
+// Available routes
+app.use('/api/auth', require('./routes/auth.js'))
+app.use('/api/notes', require('./routes/notes.js'))
+
+
 app.get('/', (req, res) => {
     res.send("Hello world");
+})
+
+app.get('/api/v1/login', (req, res) => {
+    res.send("Hello login");
 })
 
 app.listen(port, () => {
