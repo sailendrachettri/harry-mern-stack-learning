@@ -4,9 +4,7 @@ const mongoURI = "mongodb://localhost:27017/?readPreference=primary&appname=Mong
 const connectToMongo = () => {
     // mongoose.connect(mongoURI)
     // or
-    mongoose.createConnection(mongoURI, () => {
-        console.log("Connected successfully!");
-    })
+    mongoose.connect(mongoURI)
 }
 
 module.exports = connectToMongo
