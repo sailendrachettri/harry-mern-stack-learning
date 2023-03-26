@@ -5,7 +5,7 @@ const User = require("../models/User")
 const { body, validationResult } = require('express-validator')
 const jwt = require('jsonwebtoken')
 
-const JWT_TOKEN = 'jwt@token!.e@secret'
+const JWT_SECRET = 'jwt@token!.e@secret'
 
 router.post('/createuser', [
     body('email', 'Invalid email').isEmail(),
@@ -39,7 +39,7 @@ router.post('/createuser', [
                 id: user.id
             }
         }
-        const auth_token = jwt.sign(data, JWT_TOKEN)
+        const auth_token = jwt.sign(data, JWT_SECRET)
 
         res.json({ auth_token })
 
@@ -47,8 +47,45 @@ router.post('/createuser', [
         console.log(error.message);
         res.status(500).send("Something went wrong :(")
     }
-
-
 })
 
+// AUTHETICATE A USER
+router.post('/login', [
+    body('email', 'Invalid email').isEmail(),
+    body('password', 'Password cannot be blank').exists()
+], async (req, res) => {
+    // if error occured then send bad request
+    const error = validationResult(req)
+    if (!error.isEmpty()) {
+        return res.status(400).json({ error: error.array() })
+    }
+
+    const { email, password } = req.body
+
+    try {
+        const user = await User.findOne({ email })
+        if (!user) {
+            return res.status(400).json({ error: "Invalid credentials" })
+        }
+
+        const passwordCompare = await bcrypt.compare(password, user.password)
+
+        if (!passwordCompare) {
+            return res.status(400).json({ error: "Invalid credentials" })
+        }
+
+        const data = {
+            user: {
+                id: user.id
+            }
+        }
+        const auth_token = jwt.sign(data, JWT_SECRET)
+        res.json({ auth_token })
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send("Something went wrong :(")
+    }
+
+})
 module.exports = router
