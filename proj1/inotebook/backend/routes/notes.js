@@ -5,7 +5,7 @@ const Note = require('../models/Note')
 const { body, validationResult } = require('express-validator')
 
 
-// ROUT 1: get all the notes. login required
+// ROUTE 1: get all the notes. login required
 router.get('/fetchallnotes', fetchuser, async (req, res) => {
     try {
         const notes = await Note.find({ user: req.user.id })
@@ -15,7 +15,7 @@ router.get('/fetchallnotes', fetchuser, async (req, res) => {
         res.status(500).send("Something went wrong :(")
     }
 })
-// ROUT 2: Add notes using post. login required
+// ROUTE 2: Add notes using post. login required
 router.post('/addnote', fetchuser, [
     body('title', 'Enter a valid title').isLength({ min: 3 }),
     body('description', 'Enter a valid description').isLength({ min: 5 })
@@ -36,8 +36,33 @@ router.post('/addnote', fetchuser, [
 
         res.json(savedNote);
     } catch (error) {
-
+        console.log(error.message);
+        res.status(500).send("Something went wrong :(")
     }
 })
 
+// ROUTE 3: Update notes using post. login required
+router.put('/updatenote/:id', fetchuser, async (req, res) => {
+    const { title, description, tag } = req.body
+
+    // create newNote object
+    const newNote = {}
+
+    if (title) { newNote.title = title }
+    if (description) { newNote.description = description }
+    if (tag) { newNote.tag = tag }
+
+    // find the note to be updated and update it
+    let note = await Note.findById(req.params.id)
+
+    if (!note) { return res.status(404).send("Not found") }
+
+    if (note.user.toString() !== req.user.id) {
+        return res.status(401).send("Unauthorized user")
+    }
+
+    note = await Note.findByIdAndUpdate(req.params.id, { $set: newNote }, { new: true })
+    res.json({ note })
+
+})
 module.exports = router
