@@ -4,9 +4,11 @@ const router = express.Router()
 const User = require("../models/User")
 const { body, validationResult } = require('express-validator')
 const jwt = require('jsonwebtoken')
+const fetchuser = require('../middleware/fetchuser')
 
 const JWT_SECRET = 'jwt@token!.e@secret'
 
+// ROUTE 1:
 router.post('/createuser', [
     body('email', 'Invalid email').isEmail(),
     body('password', 'Password length should be greater than 5').isLength({ min: 5 }),
@@ -49,7 +51,7 @@ router.post('/createuser', [
     }
 })
 
-// AUTHETICATE A USER
+// ROUTE 2: AUTHETICATE A USER
 router.post('/login', [
     body('email', 'Invalid email').isEmail(),
     body('password', 'Password cannot be blank').exists()
@@ -86,6 +88,22 @@ router.post('/login', [
         console.log(error.message);
         res.status(500).send("Something went wrong :(")
     }
-
 })
+
+
+// ROUTE 3: GET LOGGED IN USER DETAILS. LOGIN REQUIRED
+router.post('/getuser', fetchuser, async (req, res) => {
+
+    try {
+        const userId = req.user.id
+        const user = await User.findById(userId).select("-password")
+        res.send(user)
+
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send("Something went wrong :(")
+    }
+})
+
 module.exports = router
