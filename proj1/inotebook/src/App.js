@@ -1,11 +1,10 @@
-import logo from './logo.svg';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
       <>
-        <h1>Lets do the frontend now :)</h1>
+        <h1>Lets do the frontend :)</h1>
       </>
     </div>
   );
