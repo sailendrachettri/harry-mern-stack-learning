@@ -4,11 +4,12 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import About from './components/About';
 import User from './components/User';
+import NoteState from './context/notes/NoteState';
 
 function App() {
   return (
-    <div className="App">
-      <>
+    <>
+      <NoteState>
         <Router >
           <Navbar />
           <Routes>
@@ -17,8 +18,8 @@ function App() {
             <Route path='/user' element={<User />} />
           </Routes>
         </Router>
-      </>
-    </div>
+      </NoteState>
+    </>
   );
 }
 
