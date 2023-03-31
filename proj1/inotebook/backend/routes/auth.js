@@ -42,7 +42,6 @@ router.post('/createuser', [
             }
         }
         const auth_token = jwt.sign(data, JWT_SECRET)
-
         res.json({ auth_token })
 
     } catch (error) {
@@ -56,6 +55,9 @@ router.post('/login', [
     body('email', 'Invalid email').isEmail(),
     body('password', 'Password cannot be blank').exists()
 ], async (req, res) => {
+    // variables
+    let success = false
+
     // if error occured then send bad request
     const error = validationResult(req)
     if (!error.isEmpty()) {
@@ -73,7 +75,8 @@ router.post('/login', [
         const passwordCompare = await bcrypt.compare(password, user.password)
 
         if (!passwordCompare) {
-            return res.status(400).json({ error: "Invalid credentials" })
+            success = false;
+            return res.status(400).json({ success, error: "Invalid credentials" })
         }
 
         const data = {
@@ -82,7 +85,8 @@ router.post('/login', [
             }
         }
         const auth_token = jwt.sign(data, JWT_SECRET)
-        res.json({ auth_token })
+        success = true;
+        res.json({ success, auth_token })
 
     } catch (error) {
         console.log(error.message);
