@@ -1,12 +1,23 @@
 import React from 'react'
 
-const Alert = (props) => {
+function Alert(props) {
+
+    const firstAlphabetCaptialize = (word) => {
+        if (word === 'danger') word = "Error"
+
+        let lower = word.toLowerCase();
+        return lower.charAt(0).toUpperCase() + lower.slice(1);
+    }
+
     return (
-        <>
-            <div className="alert alert-primary" role="alert">
-                {props.message}
-            </div>
-        </>
+        <div style={{ height: '55px' }}>
+            {props.alert && /* this and operator with below html text comparison */
+                <div className="">
+                    <div className={`alert alert-${props.alert.type} alert-dismissible fade show`} role="alert">
+                        <strong>{firstAlphabetCaptialize(props.alert.type)}! </strong> : {props.alert.msg}
+                    </div>
+                </div>}
+        </div>
     )
 }
 
